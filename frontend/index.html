@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FootLeague</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 6px 8px; border-bottom: 1px solid #ddd; text-align: left; }
+    .aviso { background: #fff4d6; padding: 10px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <!-- PÁGINA TEMPORAL: el compañero de frontend reemplaza este archivo y agrega style.css y app.js -->
+  <p class="aviso">Página temporal de prueba. Aquí va el frontend del grupo.</p>
+  <h1>FootLeague</h1>
+  <h2>Tabla de posiciones</h2>
+  <table id="tabla">
+    <thead><tr><th>#</th><th>Equipo</th><th>PJ</th><th>DG</th><th>Pts</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    // Ruta relativa: funciona igual en localhost y en el servidor desplegado
+    const API = '/api';
+
+    fetch(`${API}/posiciones`)
+      .then(res => res.json())
+      .then(equipos => {
+        document.querySelector('#tabla tbody').innerHTML = equipos.map((e, i) =>
+          `<tr><td>${i + 1}</td><td>${e.nombre}</td><td>${e.pj}</td><td>${e.dg}</td><td>${e.pts}</td></tr>`
+        ).join('');
+      })
+      .catch(() => alert('No se pudo conectar con la API. ¿Está corriendo el backend?'));
+  </script>
+</body>
+</html>

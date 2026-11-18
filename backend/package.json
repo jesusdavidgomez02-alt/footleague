@@ -1,0 +1,17 @@
+{
+  "name": "footleague-backend",
+  "version": "1.0.0",
+  "description": "FootLeague: sistema web para la gestión y administración de ligas de fútbol (Node.js + Express + PostgreSQL)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "pg": "^8.23.1"
+  }
+}
