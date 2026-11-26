@@ -2,30 +2,35 @@ const { Router } = require('express');
 const pool = require('../db');
 const router = Router();
 
-// GET /api/posiciones -> tabla de posiciones calculada a partir de los partidos
-// Victoria = 3 pts, empate = 1 pt, derrota = 0 pts
+// GET /api/posiciones -> tabla de posiciones (consulta 4 de consultas.sql)
+// Se calcula desde los partidos: victoria = 3 pts, empate = 1 pt, derrota = 0
+// Los ::int convierten los totales a número (PostgreSQL los devuelve como texto en Node)
 router.get('/', async (req, res) => {
   const { rows } = await pool.query(`
-    WITH resultados AS (
-      SELECT local_id AS equipo_id, goles_local AS gf, goles_visitante AS gc FROM partidos
-      UNION ALL
-      SELECT visitante_id, goles_visitante, goles_local FROM partidos
-    )
-    SELECT e.id, e.nombre,
-           COUNT(r.equipo_id)::int                               AS pj,
-           COUNT(*) FILTER (WHERE r.gf > r.gc)::int              AS pg,
-           COUNT(*) FILTER (WHERE r.gf = r.gc)::int              AS pe,
-           COUNT(*) FILTER (WHERE r.gf < r.gc)::int              AS pp,
-           COALESCE(SUM(r.gf), 0)::int                           AS gf,
-           COALESCE(SUM(r.gc), 0)::int                           AS gc,
-           COALESCE(SUM(r.gf - r.gc), 0)::int                    AS dg,
-           (COUNT(*) FILTER (WHERE r.gf > r.gc) * 3
-            + COUNT(*) FILTER (WHERE r.gf = r.gc))::int          AS pts
-      FROM equipos e
-      LEFT JOIN resultados r ON r.equipo_id = e.id
-     GROUP BY e.id, e.nombre
-     ORDER BY pts DESC, dg DESC, gf DESC, e.nombre
-  `);
+WITH resultados AS (
+SELECT equipo_local_id AS equipo_id, goles_local AS goles_favor, goles_visitante AS goles_contra
+FROM partidos
+UNION ALL
+SELECT equipo_visitante_id AS equipo_id, goles_visitante AS goles_favor, goles_local AS goles_contra
+FROM partidos
+)
+SELECT e.id AS equipo_id, e.nombre,
+COUNT(r.equipo_id)::int AS jugados,
+COALESCE(SUM(r.goles_favor), 0)::int AS goles_favor,
+COALESCE(SUM(r.goles_contra), 0)::int AS goles_contra,
+COALESCE(SUM(r.goles_favor - r.goles_contra), 0)::int AS diferencia_goles,
+COALESCE(SUM(
+CASE
+WHEN r.goles_favor > r.goles_contra THEN 3
+WHEN r.goles_favor = r.goles_contra THEN 1
+ELSE 0
+END
+), 0)::int AS puntos
+FROM equipos e
+LEFT JOIN resultados r ON e.id = r.equipo_id
+GROUP BY e.id, e.nombre
+ORDER BY puntos DESC, diferencia_goles DESC, goles_favor DESC, e.nombre ASC
+`);
   res.json(rows);
 });
 

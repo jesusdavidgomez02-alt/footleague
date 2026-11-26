@@ -2,22 +2,33 @@ const { Router } = require('express');
 const pool = require('../db');
 const router = Router();
 
-// GET /api/partidos?equipo=3 -> partidos (filtro opcional por equipo)
+// GET /api/partidos -> partidos (consulta 3 de consultas.sql)
+// Filtros opcionales: /api/partidos?equipo=3  y  /api/partidos?jornada=2
 router.get('/', async (req, res) => {
-  const { equipo } = req.query;
-  let sql = `SELECT p.id, p.fecha,
-                    el.nombre AS local, p.goles_local,
-                    ev.nombre AS visitante, p.goles_visitante
-               FROM partidos p
-               JOIN equipos el ON el.id = p.local_id
-               JOIN equipos ev ON ev.id = p.visitante_id`;
+  const { equipo, jornada } = req.query;
   const params = [];
+  const condiciones = [];
   if (equipo) {
-    sql += ' WHERE p.local_id = $1 OR p.visitante_id = $1';
     params.push(equipo);
+    condiciones.push(`(p.equipo_local_id = $${params.length} OR p.equipo_visitante_id = $${params.length})`);
   }
-  sql += ' ORDER BY p.fecha';
-  const { rows } = await pool.query(sql, params);
+  if (jornada) {
+    params.push(jornada);
+    condiciones.push(`p.jornada = $${params.length}`);
+  }
+  const filtro = condiciones.length ? 'WHERE ' + condiciones.join(' AND ') : '';
+  const { rows } = await pool.query(`
+SELECT p.id, p.jornada, p.fecha,
+p.equipo_local_id, el.nombre AS equipo_local,
+p.equipo_visitante_id, ev.nombre AS equipo_visitante,
+p.goles_local, p.goles_visitante,
+'Finalizado' AS estado
+FROM partidos p
+INNER JOIN equipos el ON p.equipo_local_id = el.id
+INNER JOIN equipos ev ON p.equipo_visitante_id = ev.id
+${filtro}
+ORDER BY p.fecha, p.id
+`, params);
   res.json(rows);
 });
 

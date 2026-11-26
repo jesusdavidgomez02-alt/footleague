@@ -1,6 +1,6 @@
 # FootLeague — Backend
 
-Node.js + Express + PostgreSQL. API de consulta (solo GET) sobre equipos, jugadores, partidos y tabla de posiciones.
+Node.js + Express + PostgreSQL. API de consulta (solo GET) sobre equipos, jugadores, partidos, tabla de posiciones y goleadores.
 
 ## Requisitos
 - Node.js 18 o superior → https://nodejs.org (versión LTS)
@@ -8,13 +8,14 @@ Node.js + Express + PostgreSQL. API de consulta (solo GET) sobre equipos, jugado
 - Git
 
 ## 1. Crear la base de datos
-1. Abre **pgAdmin** → clic derecho en *Databases* → *Create* → *Database* → nombre: `futbol_db`.
-2. Clic derecho en `futbol_db` → *Query Tool*.
-3. Abre el archivo `database.sql` (ícono de carpeta), y ejecútalo con **F5**.
+1. Abre **pgAdmin** → clic derecho en *Databases* → *Create* → *Database* → nombre: `liga_colombiana`.
+2. Clic derecho en `liga_colombiana` → *Query Tool*.
+3. Abre el archivo `database.sql` (ícono de carpeta) y ejecútalo con **F5**.
 4. Comprueba: `SELECT * FROM equipos;` debe devolver 10 filas.
 
-> Si tu compañero de base de datos entrega su propio script, reemplaza `database.sql` por el suyo.
-> Solo deben respetar los nombres de tablas y columnas.
+Archivos de la base de datos:
+- `database.sql`: tablas, índices y datos (10 equipos, 80 jugadores, 45 partidos en 9 jornadas).
+- `consultas.sql`: las 5 consultas que usa la API, para probarlas en pgAdmin.
 
 ## 2. Configurar y correr
 ```bash
@@ -38,58 +39,52 @@ Abre en el navegador `http://localhost:3000/api/health` → `{"status":"ok","db"
 | GET | `/api/equipos` | Todos los equipos |
 | GET | `/api/equipos/:id` | Un equipo |
 | GET | `/api/equipos/:id/jugadores` | Plantilla del equipo |
-| GET | `/api/jugadores?posicion=Delantero` | Jugadores (filtro opcional: Portero, Defensa, Medio, Delantero) |
-| GET | `/api/jugadores/goleadores` | Top 10 goleadores |
+| GET | `/api/jugadores` | Todos los jugadores (filtro opcional `?posicion=portero`, `defensa`, `mediocampista` o `delantero`) |
 | GET | `/api/jugadores/:id` | Un jugador |
-| GET | `/api/partidos?equipo=1` | Partidos (filtro opcional por id de equipo) |
+| GET | `/api/partidos` | Partidos (filtros opcionales `?equipo=3` y `?jornada=2`) |
 | GET | `/api/posiciones` | Tabla de posiciones (3 pts victoria, 1 empate) |
+| GET | `/api/goleadores` | Jugadores ordenados por goles |
 | GET | `/api/health` | Estado de la API y la BD |
 
 Errores: `404` si no existe el recurso, `400` si el id no es un número, `500` si falla la BD.
 
-### Formato JSON (para el frontend)
+### Formato JSON
 ```json
-// /api/equipos/1
-{ "id": 1, "nombre": "Junior", "ciudad": "Barranquilla", "estadio": "Metropolitano Roberto Meléndez" }
+// /api/equipos
+[{ "id": 4, "nombre": "América de Cali", "ciudad": "Cali", "estadio": "Estadio Olímpico Pascual Guerrero" }]
 
-// /api/jugadores/goleadores
-[{ "id": 8, "nombre": "Jhon Valencia", "posicion": "Delantero", "goles": 11, "equipo": "Junior" }]
+// /api/jugadores
+[{ "id": 23, "nombre": "Cristian Barrios", "equipo_id": 3, "equipo": "Junior", "posicion": "delantero", "numero": 9, "goles": 4 }]
 
 // /api/partidos
-[{ "id": 1, "fecha": "2026-08-02", "local": "Junior", "goles_local": 2, "visitante": "Atlético Nacional", "goles_visitante": 1 }]
+[{ "id": 9, "jornada": 2, "fecha": "2026-09-12", "equipo_local_id": 3, "equipo_local": "Junior", "equipo_visitante_id": 6, "equipo_visitante": "Deportes Tolima", "goles_local": 1, "goles_visitante": 2, "estado": "Finalizado" }]
 
 // /api/posiciones
-[{ "id": 6, "nombre": "Independiente Medellín", "pj": 5, "pg": 3, "pe": 1, "pp": 1, "gf": 13, "gc": 9, "dg": 4, "pts": 10 }]
+[{ "equipo_id": 4, "nombre": "América de Cali", "jugados": 9, "goles_favor": 13, "goles_contra": 4, "diferencia_goles": 9, "puntos": 19 }]
+
+// /api/goleadores
+[{ "jugador_id": 7, "nombre": "Kevin Parra", "equipo_id": 1, "equipo": "Atlético Nacional", "goles": 6 }]
 ```
 
-Ejemplo de consumo desde el frontend:
-```js
-const res = await fetch('/api/posiciones');  // ruta relativa: sirve en local y en el servidor
-const tabla = await res.json();
-```
-
-## 4. Subir a GitHub
-Desde la carpeta raíz del proyecto (no desde `backend/`), para que se suban backend y frontend juntos:
+## 4. Subir cambios a GitHub
+Desde la carpeta raíz del proyecto (no desde `backend/`):
 ```bash
-git init
 git add .
-git commit -m "FootLeague: backend con Express y PostgreSQL"
-git branch -M main
-git remote add origin https://github.com/TU_USUARIO/footleague.git
-git push -u origin main
+git commit -m "describe qué cambiaste"
+git push
 ```
-El `.gitignore` ya evita subir `node_modules/` y `.env` (tu clave).
-En GitHub: *Settings → Collaborators* → agrega a tus 2 compañeros.
+El `.gitignore` evita subir `node_modules/` y `.env` (la clave).
 
-## 5. Despliegue (formativa 2)
-1. Crea una base PostgreSQL en el servicio (Render, Railway, Neon, etc.) y ejecuta `database.sql` ahí.
-2. Crea el servicio web desde el repo de GitHub:
+## 5. Despliegue
+1. Crea una base PostgreSQL en el servicio (por ejemplo Neon) y ejecuta `database.sql` ahí.
+2. Crea el servicio web desde el repo de GitHub (por ejemplo Render):
+   - Root directory: `backend`
    - Build command: `npm install`
    - Start command: `npm start`
-   - Root directory: `backend`
-3. Variable de entorno: `DATABASE_URL` = la URL de conexión que te da el servicio.
+3. Variable de entorno: `DATABASE_URL` = la URL de conexión que te da el servicio de base de datos.
 4. Prueba `https://TU-APP/api/health`.
-5. Pásale la URL al del frontend para que cambie `http://localhost:3000` por esa.
+
+El frontend usa rutas relativas (`/api`), así que funciona igual en local y desplegado sin cambiar nada.
 
 ## Estructura
 ```
@@ -101,8 +96,10 @@ backend/
 │       ├── equipos.js
 │       ├── jugadores.js
 │       ├── partidos.js
-│       └── posiciones.js
-├── database.sql          tablas + datos de prueba
+│       ├── posiciones.js
+│       └── goleadores.js
+├── database.sql          tablas + datos (parte de base de datos)
+├── consultas.sql         consultas SQL de los endpoints
 ├── .env.example
 └── package.json
 ```

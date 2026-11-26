@@ -19,11 +19,11 @@ app.get('/api', (req, res) => {
       'GET /api/equipos',
       'GET /api/equipos/:id',
       'GET /api/equipos/:id/jugadores',
-      'GET /api/jugadores?posicion=Delantero',
-      'GET /api/jugadores/goleadores',
+      'GET /api/jugadores?posicion=delantero',
       'GET /api/jugadores/:id',
-      'GET /api/partidos?equipo=3',
+      'GET /api/partidos?equipo=3&jornada=2',
       'GET /api/posiciones',
+      'GET /api/goleadores',
       'GET /api/health'
     ]
   });
@@ -39,6 +39,7 @@ app.use('/api/equipos', require('./routes/equipos'));
 app.use('/api/jugadores', require('./routes/jugadores'));
 app.use('/api/partidos', require('./routes/partidos'));
 app.use('/api/posiciones', require('./routes/posiciones'));
+app.use('/api/goleadores', require('./routes/goleadores'));
 
 // Ruta no encontrada
 app.use((req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
