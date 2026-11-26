@@ -4,6 +4,13 @@
 
 Parcial final: API REST de consulta sobre equipos, jugadores, partidos y tabla de posiciones.
 
+## Demo en línea
+- **Página:** https://footleague.onrender.com
+- **API:** https://footleague.onrender.com/api
+- **Estado:** https://footleague.onrender.com/api/health
+
+> Está en el plan gratis de Render: si no ha tenido visitas, la primera carga tarda unos 50 segundos.
+
 - **Backend:** Node.js + Express
 - **Base de datos:** PostgreSQL
 - **Frontend:** HTML, CSS y JavaScript puro
@@ -56,6 +63,8 @@ footleague/
 ```
 
 ## Integrantes
-- Jesús David Gómez — Backend
-- (Nombre) — Base de datos
-- (Nombre) — Frontend
+| Integrante | Parte |
+|---|---|
+| Jesús David Gómez | Backend (Node.js + Express) y despliegue (Render + Neon) |
+| Nicole Blanco | Base de datos (PostgreSQL): `backend/database.sql` y `backend/consultas.sql` |
+| Angel Ariza | Frontend (HTML, CSS y JavaScript): carpeta `frontend/` |
