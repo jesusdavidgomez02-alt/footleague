@@ -100,6 +100,23 @@ backend/
 │       └── goleadores.js
 ├── database.sql          tablas + datos (parte de base de datos)
 ├── consultas.sql         consultas SQL de los endpoints
+
+
+Diagrama entidad-relación
+
+El modelo de base de datos de FootLeague está compuesto por tres tablas principales:
+
+equipos: almacena la información de los equipos, incluyendo nombre, ciudad y estadio.
+jugadores: almacena los datos de los jugadores, su posición, dorsal, cantidad de goles y el equipo al que pertenecen.
+partidos: registra los encuentros disputados, la jornada, fecha, equipos participantes y los goles anotados por cada equipo.
+Relaciones entre las tablas
+Un equipo puede tener varios jugadores.
+Un equipo puede participar en diferentes partidos como local o visitante.
+Los jugadores están relacionados con los equipos mediante equipo_id.
+Los partidos se relacionan con los equipos mediante equipo_local_id y equipo_visitante_id.
+Imagen del diagrama
+
+El diagrama entidad-relación se encuentra en el archivo diagrama-er.png dentro de esta carpeta.
 ├── .env.example
 └── package.json
 ```
