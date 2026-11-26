@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101b2d">
+  <title>FootLeague | Panel de torneo</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#inicio" aria-label="FootLeague, inicio">
+      <span class="brand-mark">F</span>
+      <span>FOOTLEAGUE<span class="brand-dot">.</span></span>
+    </a>
+    <nav aria-label="Navegación principal">
+      <a href="#equipos">Equipos</a>
+      <a href="#jugadores">Plantillas</a>
+      <a href="#partidos">Partidos</a>
+      <a href="#posiciones">Posiciones</a>
+    </nav>
+    <span class="season"><i></i> Temporada 2026</span>
+  </header>
+
+  <main id="inicio">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">CENTRO DE COMPETICIÓN</p>
+        <h1>La liga, <span>al día.</span></h1>
+        <p class="hero-subtitle">Equipos, jugadores y resultados en un solo lugar.</p>
+        <a class="hero-link" href="#posiciones">Ver tabla de posiciones <span>↗</span></a>
+      </div>
+      <div class="hero-ball" aria-hidden="true">⚽</div>
+      <div class="hero-meta">
+        <span>DATOS EN VIVO</span>
+        <span id="last-updated">Conectando con el servidor…</span>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Resumen de temporada">
+      <article class="stat-card">
+        <span class="stat-label">EQUIPOS</span>
+        <strong id="stat-teams">—</strong>
+        <span class="stat-note">En competencia</span>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">JUGADORES</span>
+        <strong id="stat-players">—</strong>
+        <span class="stat-note">Plantillas activas</span>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">PARTIDOS</span>
+        <strong id="stat-matches">—</strong>
+        <span class="stat-note">Registrados</span>
+      </article>
+      <article class="stat-card stat-highlight">
+        <span class="stat-label">GOLEADOR</span>
+        <strong id="stat-scorer">—</strong>
+        <span class="stat-note" id="stat-scorer-goals">Esperando datos</span>
+      </article>
+    </section>
+
+    <div id="api-error" class="notice" role="status" hidden></div>
+
+    <section class="content-grid">
+      <section class="panel standings-panel" id="posiciones">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">ASÍ VA EL TORNEO</p>
+            <h2>Posiciones</h2>
+          </div>
+          <span class="live-badge"><i></i> EN VIVO</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Equipo</th>
+                <th class="numeric">PJ</th>
+                <th class="numeric">DG</th>
+                <th class="numeric">Pts</th>
+              </tr>
+            </thead>
+            <tbody id="standings-body">
+              <tr><td colspan="5" class="empty">Cargando posiciones…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel scorers-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">PODER DE ATAQUE</p>
+            <h2>Goleadores</h2>
+          </div>
+          <span class="section-icon">↗</span>
+        </div>
+        <div id="scorers-list" class="scorers-list">
+          <p class="empty">Cargando goleadores…</p>
+        </div>
+      </section>
+    </section>
+
+    <section class="panel data-panel" id="equipos">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">LOS PROTAGONISTAS</p>
+          <h2>Equipos</h2>
+        </div>
+        <label class="search">
+          <span>⌕</span>
+          <input id="team-filter" type="search" placeholder="Buscar equipo" aria-label="Buscar equipo">
+        </label>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Equipo</th>
+              <th>Ciudad</th>
+              <th>Estadio</th>
+              <th class="numeric">Jugadores</th>
+            </tr>
+          </thead>
+          <tbody id="teams-body">
+            <tr><td colspan="4" class="empty">Cargando equipos…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel data-panel" id="jugadores">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">TALENTO EN CANCHA</p>
+          <h2>Plantillas</h2>
+        </div>
+        <div class="filters">
+          <label class="search">
+            <span>⌕</span>
+            <input id="player-filter" type="search" placeholder="Buscar jugador" aria-label="Buscar jugador">
+          </label>
+          <select id="player-team-filter" aria-label="Filtrar jugadores por equipo">
+            <option value="">Todos los equipos</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Jugador</th>
+              <th>Equipo</th>
+              <th>Posición</th>
+              <th class="numeric">N.º</th>
+              <th class="numeric">Goles</th>
+            </tr>
+          </thead>
+          <tbody id="players-body">
+            <tr><td colspan="5" class="empty">Cargando plantillas…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel data-panel" id="partidos">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">CALENDARIO Y RESULTADOS</p>
+          <h2>Partidos</h2>
+        </div>
+        <label class="search">
+          <span>⌕</span>
+          <input id="match-filter" type="search" placeholder="Buscar equipo" aria-label="Buscar partido por equipo">
+        </label>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Local</th>
+              <th class="numeric">Marcador</th>
+              <th>Visitante</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="matches-body">
+            <tr><td colspan="5" class="empty">Cargando partidos…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="#inicio">
+      <span class="brand-mark">F</span>
+      <span>FOOTLEAGUE<span class="brand-dot">.</span></span>
+    </a>
+    <span>Panel de torneo · Temporada 2026</span>
+    <a href="#inicio">Volver arriba ↑</a>
+  </footer>
+</body>
+</html>
