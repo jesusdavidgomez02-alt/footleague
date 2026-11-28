@@ -2,7 +2,7 @@
 // Claves: equipos(id,nombre,ciudad,estadio); jugadores(id,nombre,posicion,numero,equipo_id,goles);
 // partidos(id,fecha,equipo_local_id,equipo_visitante_id,goles_local,goles_visitante,estado).
 // Posiciones: {equipo_id,nombre,jugados,diferencia_goles,puntos}; goleadores: {jugador_id,nombre,equipo_id,equipo,goles}.
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = '/api';
 const state = { teams: [], players: [], matches: [], standings: [], scorers: [] };
 const $ = (id) => document.getElementById(id);
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
